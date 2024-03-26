@@ -23,6 +23,7 @@ Create a funnel chart that presents the total number of pizzas sold for each piz
 Create a bar chart highlighting the top 5 best-selling pizzas based on the total number of pizzas sold.  This chart will help us identify the most popular pizza options. 
 7.	BOTTOM 5 WORST SELLERS BY TOTAL PIZZAS SOLD:
 Create a bar chart showcasing the bottom 5 worst-selling pizzas based on the total number of pizzas sold. This chart will enable us to identify underperforming or less popular pizza options.
+in
 
 
 
