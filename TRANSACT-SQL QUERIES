@@ -1,0 +1,132 @@
+
+
+use [Pizza DB]
+select * from pizza_sales
+
+-- Total Revenue
+
+select round(sum(total_price),2) as total_revenue from pizza_sales
+
+select cast(sum(total_price) as decimal(10,2)) as total_revenue from pizza_sales
+
+-- Average amount spent per order calculate by dividing the Total Revenue by the Total # of orders
+
+select round(sum(total_price) / count(distinct order_id),2) from pizza_sales
+
+-- Fetch the Total quantity of pizzas sold
+
+select sum(quantity) as total_quantity_sold from pizza_sales
+
+-- calculate the AVG numbers of pizzas sold per order
+
+select round(cast(SUM(quantity) as decimal(10,2)) / cast(count(distinct order_id) as decimal(10,2)),3) AS avg_number_of_pizzas_sold from pizza_sales
+
+-- Daily trend for total number of orders
+
+select COUNT(DISTINCT order_id) AS total_number_of_orders, DATENAME(DW, order_date) AS day_of_week from pizza_sales
+
+group by DATENAME(DW, order_date)
+
+order by total_number_of_orders DESC
+
+-- Hourly Trend for Total Number of Orders
+
+select COUNT(DISTINCT order_id) AS total_number_of_orders, DATEPART(HOUR, order_time) AS hourly_trend from pizza_sales
+
+group by DATEPART(HOUR, order_time)
+
+order by hourly_trend
+
+-- PERCENTAGE OF TOTAL REVENUE BY PIZZA CATEGORY
+
+select ROUND(SUM(total_price),2) AS total_revenue, pizza_category, 
+
+ROUND(SUM(total_price) / (SELECT SUM(total_price) from pizza_sales) * 100, 2) AS percentage_of_total_revenue from pizza_sales
+
+GROUP BY pizza_category
+
+-- PERCENTAGE OF TOTAL REVENUE BY PIZZA CATEGORY FOR THE MONTH OF JANUARY
+-- Whenever there is a subquery in the query and whenever I use the filter clause WHERE, I have to add it to the subquery too in order to get the right output 
+
+select ROUND(SUM(total_price),2) AS total_revenue, pizza_category, 
+
+ROUND(SUM(total_price) / (SELECT SUM(total_price) from pizza_sales WHERE MONTH(order_date) = 01)  * 100, 2) AS percentage_of_total_revenue_month_of_january
+
+FROM pizza_sales
+
+WHERE MONTH(order_date) = 01
+
+GROUP BY pizza_category
+
+ORDER BY total_revenue DESC
+
+-- PERCENTAGE OF SALES BY PIZZA SIZE. INSTEAD OF ROUNDING, I HAVE USED THE CAST FUNCTION TO GET THE VALUES’ NUMBER OF DECIMALS
+
+select ROUND(SUM(total_price),2) AS total_revenue, pizza_size, 
+
+CAST(SUM(total_price) / (SELECT SUM(total_price) from pizza_sales) * 100 AS decimal(10,2)) AS PCT_of_total_revenue from pizza_sales
+
+GROUP BY pizza_size
+
+ORDER BY PCT_of_total_revenue DESC
+
+-- PERCENTAGE OF SALES BY PIZZA SIZE FOR THE FIRST QUARTER OF THE YEAR
+-- I must include the filter clause WHERE in the subquery TOO. As the query above I have used CAST instead of ROUNDING to get the right # of decimals
+
+select ROUND(SUM(total_price),2) AS total_revenue, pizza_size,
+
+CAST(SUM(total_price) / (SELECT SUM(total_price) FROM pizza_sales WHERE DATEPART(QUARTER, order_date) = 1) * 100 AS decimal(10,2)) AS PCT_of_total_revenue 
+
+from pizza_sales
+
+WHERE DATEPART(QUARTER, order_date) = 1
+
+GROUP BY pizza_size
+
+ORDER BY total_revenue DESC
+
+-- Total Pizzas sold by Pizza Category
+
+SELECT SUM(quantity) AS number_of_pizza_sold, pizza_category
+
+FROM pizza_sales
+
+GROUP BY pizza_category
+
+ORDER BY number_of_pizza_sold DESC
+
+-- TOP 5 BEST PIZZA NAMES BEST SELLERS BY TOTAL PIZZAS SOLD
+
+SELECT TOP 5
+
+pizza_name, SUM(quantity) AS total_pizzas_sold FROM pizza_sales
+
+GROUP BY pizza_name
+
+ORDER BY total_pizzas_sold DESC
+
+-- BOTTOM 5 BEST PIZZA NAMES WORST SELLERS BY TOTAL PIZZAS SOLD
+
+SELECT TOP 5
+
+pizza_name, SUM(quantity) AS total_pizzas_sold FROM pizza_sales
+
+GROUP BY pizza_name
+
+ORDER BY total_pizzas_sold ASC
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
